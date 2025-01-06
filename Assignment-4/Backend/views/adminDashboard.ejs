@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin</title>
+    <link rel="stylesheet" href="/css/admin-style.css" />
+    <script
+      src="https://kit.fontawesome.com/eabac940d1.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body onload="blogs()">
+    <nav>
+      <div class="logo">myBlog</div>
+      <div class="nav-items">
+        <ul>
+          <!-- <li><a href=""> Home</a></li>
+          <li><a href="">Dashboard</a></li> -->
+          <li>
+            <a href="/api/v1/user/logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <!-- <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a> -->
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <main>
+      <div class="controls-container">
+        <p class="d-board-text">Dashboard</p>
+        <div class="controls">
+            <button onclick="blogs()" id="posts-btn"><i class="fa-solid fa-newspaper"></i> Manage Posts</button>
+            <button onclick="category()" id="user-btn"><i class="fa-solid fa-table-list"></i> Manage Categories</button>
+        </div>
+      </div>
+      <div class="content-container">
+        <div class="stats-container">
+            <div class="stat-box">
+                <div>
+                <h1>200</h1>
+                <h2>Total Visits</h2>
+                </div>
+                <p><i class="fa-solid fa-eye"></i></p>
+            </div>
+            <div class="stat-box">
+                <div>
+                <h1>78</h1>
+                <h2>Total Posts</h2>
+                </div>
+                <p><i class="fa-solid fa-newspaper"></i></p>
+            </div>
+            <div class="stat-box">
+                <div>
+                <h1>60</h1>
+                <h2>Total Users</h2>
+                </div>
+                <p><i class="fa-solid fa-user"></i></p>
+            </div>
+        </div>
+
+        <div class="posts-container user-container" id="posts">
+          <!-- <h1>Recent Blogs</h1> -->
+          <div class="header">
+            <h1>Recent Blogs</h1>
+            <button class="add-blog-btn" onclick="openAddBlogModal()">Add Blog</button>
+          </div>
+          <div class="posts" id="style-2">
+              <table>
+                  <tr>
+                      <th>No</th>
+                      <th>Image</th>
+                      <th>Title</th>
+                      <th>Category</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
+                  </tr>
+                  
+                  <% blogs.forEach((blog, index) => { %> <!-- Loop through the array -->
+                    <% let blogId=blog._id; %>
+                    <% let blogTitle=blog.title; %>
+                    <% let blogDescription=blog.description; %>
+                  <tr>
+                      <td><%= index + 1 %>.</td>
+                      <td><a href="#">
+                              <img src="<%=blog.thumbnailImage %>" 
+                              alt="Image thumbnail" 
+                              onerror="this.onerror=null; this.src='images/default-image.png'">
+                          </a>
+                      </td>
+                      <td><a href="#"class="post-name"><p><%= blogTitle %></p></a></td>
+                      <td><a href="#" class="post-name"><%= blog.category %></a></td>
+                      <td><button class="edit-btn" onclick="openEditBlogModal('<%= blogId%>', '<%= blogTitle %>', '<%= blogDescription %>')">Edit</button></td>
+                      <td> <button class="delete-btn" 
+                        onclick="deleteBlog('<%= blogId %>')">Delete</button></td>
+                  </tr>
+                  <% }) %>
+              </table>
+          </div>
+        </div>
+        <div class="user-container"  id="user">
+          <div class="header">
+            <h1>Categories</h1>
+            <button class="add-category-btn" onclick="openModal()">Add Category</button>
+          </div>
+          
+          <div class="posts" id="style-2">
+            <div class="posts" id="style-2">
+              <table>
+                  <tr>
+                      <th>No</th>
+                      <th>Category Name</th>
+                      <th>No of blogs</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
+                  </tr>
+                  
+
+
+                  <% categories.forEach((category, index) => { %> <!-- Loop through the array -->
+                    <% let categoryName =category.name %>
+                  <tr>
+                      <td><%= index + 1 %>.</td>
+                      <td><span class="category-name"><p><%= category.name %></p></span></td>
+                      <td><span class="blog-count" id="blog-no"><%= category.blogArray ? category.blogArray.length : 0 %></span></td>
+                      <td><a href="#" class="edit-btn" onclick="openEditModal('<%= categoryName %>')">Edit</a></td>
+                      <td> <button class="delete-btn" 
+                        onclick="checkAndDelete('<%= categoryName %>', '<%= category.blogArray.length %>')">Delete</button></td>
+                  </tr>
+                  <% }) %>
+              </table>
+           </div>  
+          </div>
+        </div>
+
+        <!-- Modal for Adding Category -->
+        <div class="modal" id="addCategoryModal" >
+          <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></span>
+            <h3>Add Category</h3>
+            <form id="addCategoryForm" action="/api/v1/category/addCategory" method="post">
+              <label for="categoryName">Category Name:</label>
+              <input type="text" id="categoryName" name="category" placeholder="Enter category name" required>
+              <button type="submit" class="submit-btn">Add</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Modal for Editing Category -->
+        <div class="modal" id="editCategoryModal" >
+          <div class="modal-content">
+            <span class="close-btn" onclick="closeEditModal()"><i class="fa-solid fa-xmark"></i></span>
+            <h3>Edit Category</h3>
+            <form id="addCategoryForm" action="/api/v1/category/updateCategory" method="post">
+
+               <input type="text" id="categoryName1" name="category" placeholder="Enter old category name" required>
+
+              <label for="newCategoryName">New Category Name:</label>
+              <input type="text" id="newCategoryName" name="newCategory" placeholder="Enter new category name" required>
+              <button type="submit" class="submit-btn">Edit</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Add Blog Modal -->
+        <div id="addBlogModal" class="modal">
+          <div class="modal-content1">
+              <span class="close-btn" onclick="closeAddBlogModal()">&times;</span>
+              <h2 style="margin-bottom: 15px;">Add Blog</h2>
+              
+              <form action="/api/v1/blog/addBlog" method="POST" enctype="multipart/form-data">
+                  <!-- Blog Title -->
+                  <div class="form-group">
+                      <label for="title">Title:</label>
+                      <input type="text" id="title" name="title" required>
+                  </div>
+                  
+                  <!-- Category Dropdown -->
+                  <div class="form-group">
+                      <label for="category">Category:</label>
+                      <select id="category" name="category" required>
+                          <option value="">Select Category</option>
+                          <% categories.forEach(category => { %>
+                              <option value="<%= category.name %>"><%= category.name %></option>
+                          <% }) %>
+                      </select>
+                  </div>
+                  
+                  <!-- Description -->
+                  <div class="form-group">
+                      <label for="description">Description:</label>
+                      <textarea id="description" name="description" rows="4" required></textarea>
+                  </div>
+                  
+                  <!-- Blog Image Upload -->
+                  <div class="form-group">
+                      <label for="image">Upload Image:</label>
+                      <input type="file" id="image" name="image" accept="image/*" required>
+                  </div>
+                  
+                  <!-- Submit Button -->
+                  <button type="submit" class="submit-btn">Add Blog</button>
+              </form>
+          </div>
+        </div>
+
+        <!-- Edit Blog Modal -->
+        <div id="editBlogModal1" class="modal">
+          <div class="modal-content">
+            <span class="close-btn" onclick="closeEditBlogModal()">&times;</span>
+            <h2 style="margin-bottom: 15px;">Edit Blog</h2>
+            <form action="/api/v1/blog/updateBlog" method="POST">
+              <!-- Hidden Blog ID -->
+              <input type="hidden" id="blogId1" name="blogId">
+              
+              <!-- New Title -->
+              <div class="form-group">
+                <label for="newTitle">New Title:</label>
+                <input type="text" id="newTitle1" name="newTitle" required>
+              </div>
+              
+              <!-- New Description -->
+              <div class="form-group">
+                <label for="newDescription">New Description:</label>
+                <textarea id="newDescription1" name="newDescription" rows="4" required></textarea>
+              </div>
+              
+              <!-- Submit Button -->
+              <button type="submit" class="submit-btn">Update Blog</button>
+            </form>
+          </div>
+        </div>
+
+
+        
+      </div>
+    </main>
+    
+    <script>
+      function category(){
+        document.getElementById("posts").style.display="none";
+        document.getElementById("user").style.display="block";
+        document.getElementById("user-btn").style.backgroundColor="var(--uiclr)";
+        document.getElementById("posts-btn").style.backgroundColor="";
+        document.getElementById("user-btn").classList.add("selected");
+        document.getElementById("posts-btn").classList.remove("selected");
+
+        
+        
+      }
+      function blogs(){
+        document.getElementById("user").style.display="none";
+        document.getElementById("posts").style.display="block";
+        document.getElementById("posts-btn").style.backgroundColor="var(--uiclr)";
+        document.getElementById("user-btn").style.backgroundColor="";
+        document.getElementById("posts-btn").classList.add("selected");
+        document.getElementById("user-btn").classList.remove("selected");
+
+      }
+
+      // Function to open the modal
+        function openModal() {
+          document.getElementById("addCategoryModal").style.display = "flex";
+        }
+
+        // Function to close the modal
+        function closeModal() {
+          document.getElementById("addCategoryModal").style.display = "none";
+        }
+        // Function to open the edit modal
+
+        function openEditModal(categoryName) {
+          // Set the current category name in the modal input field
+          const editModal = document.getElementById("editCategoryModal");
+          const categoryInput = document.getElementById("categoryName1");
+          categoryInput.value = categoryName; // Pre-fill the input with the current category name
+          editModal.style.display = "flex"; // Show the modal
+        }
+
+        // Function to close the edit modal
+        function closeEditModal() {
+          document.getElementById("editCategoryModal").style.display = "none";
+        }
+
+        
+        // Close the modal if the user clicks outside the modal content
+        window.onclick = function (event) {
+          const modal = document.getElementById("addCategoryModal");
+          const modal1= document.getElementById("editCategoryModal");
+          const modal2= document.getElementById("addBlogModal");
+          const modal3= document.getElementById("editBlogModal1")
+
+          if (event.target === modal) {
+            modal.style.display = "none";
+          }
+          if (event.target === modal1) {
+            modal1.style.display = "none";
+          }
+          if (event.target === modal2) {
+            modal2.style.display = "none";
+          }
+          if (event.target === modal3){
+            modal3.style.display = "none";
+          }
+        };
+
+        function checkAndDelete(categoryName, blogCount) {
+            if (blogCount > 0) {
+                alert("You have blogs in this category. You cannot delete it.");
+            } else {
+                // If no blogs, proceed with the deletion
+                window.location.href = '/api/v1/category/deleteCategory?category=' + categoryName;
+            }
+        }
+
+        function openAddBlogModal(){
+          document.getElementById("addBlogModal").style.display = "flex";
+        }
+  
+        function closeAddBlogModal(){
+          document.getElementById("addBlogModal").style.display = "none";
+        }
+
+        function openEditBlogModal(blogId,blogTitle,blogDescription){
+          // Set the current category name in the modal input field
+          const editBlogModal = document.getElementById("editBlogModal1");
+          const blogIdInput = document.getElementById("blogId1");
+          const blogTitleInput=document.getElementById("newTitle1");
+          const blogDescriptionInput=document.getElementById("newDescription1");
+
+          blogIdInput.value = blogId; // Pre-fill the input with the current category name
+          blogTitleInput.value = blogTitle;
+          blogDescriptionInput.value =blogDescription;
+          editBlogModal.style.display = "flex"; // Show the modal
+
+        }
+
+        function closeEditBlogModal() {
+          // Hide the modal
+          document.getElementById('editBlogModal1').style.display = 'none';
+        }
+
+        function deleteBlog(blogId){
+          window.location.href = '/api/v1/blog/deleteBlog?blogId=' + blogId;
+
+        }
+         
+    </script>
+  </body>
+</html>

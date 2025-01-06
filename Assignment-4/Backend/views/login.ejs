@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="css/style.css">
+    
+</head>
+<body>
+    <main>
+        <div class="login-container">
+            <div class="login-col1">
+                <h1>myBlog</h1>
+                <img src="images/blog-vector-art.png" alt="">
+            </div>
+            <div class="login-col2">
+                <p class="s-text">
+                    Don't have an account?
+                    <a href="/" class="s-btn">Sign up</a>
+                </p>
+                <div class="reg-section">
+                    <h1>Welcome to myBlog!</h1>
+                    <h2>Login to your account</h2>
+                </div>
+                <div class="form-container login-form">
+                    <form action="/api/v1/user/login" method="post">
+                        <label>Email</label>
+                        <input type="email" name="email" required>
+                        <label>Password</label>
+                        <input type="password" name="password" required>
+
+                        <!-- User/Admin Radio Buttons -->
+                        <label>Login as:</label>
+                        <div>
+                            <input type="radio" id="user" name="role" value="user" required>
+                            <label for="user" style="margin-right: 40px;">User</label>
+
+                            <input type="radio" id="admin" name="role" value="admin" required>
+                            <label for="admin">Admin</label>
+                        </div>
+
+                        <input type="submit" value="Login" class="lg-btn">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+</body>
+</html>

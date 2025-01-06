@@ -60,6 +60,7 @@ const Layout = () => {
   };
 
   const handleEdit = (user) => {
+    console.log(user);
     seteditUserData(user);
     setIsModalVisible(true);
     form.setFieldsValue(user);
@@ -77,6 +78,7 @@ const Layout = () => {
         }
         return user;
       });
+      console.log(updatedUsers)
       setUsers(updatedUsers);
       setIsModalVisible(false);
     });
