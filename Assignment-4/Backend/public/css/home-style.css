@@ -37,8 +37,10 @@ nav {
 }
 .nav-items ul {
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-end; /* Align items at the end */
   flex-direction: row;
+  gap: 30px; /* Add space between items (adjust value as needed) */
+  padding-right: 30px; /* Add space between the last item and the right edge */
 }
 .nav-items ul li {
   list-style: none;
@@ -50,13 +52,20 @@ nav {
 }
 
 /* ----------------------------------------------------------------- */
-.pop-posts-container h1 {
+#special {
+  font-size: 2rem; /* Increase font size (adjust as needed) */
+  text-align: center; /* Center the text horizontally */
+  margin: 20px 0; /* Add vertical spacing */
+  /* justify-content: space-between; */
+}
+
+/* .pop-posts-container h1 {
   margin: 30px 0;
   margin-left: 50px;
   color: var(--light-black);
   display: flex;
   justify-content: space-between;
-}
+} */
 .pop-posts-container h1 a button {
   margin-right: 50px;
   padding: 10px 8px;
@@ -149,9 +158,10 @@ nav {
 
 /* ------------------------------------------------------------------------------------ */
 .recent-posts-container h1 {
-  margin-top: 20px;
-  margin-left: 50px;
-  color: var(--light-black);
+  font-size: 2rem; /* Increase font size (adjust as needed) */
+  text-align: center; /* Center the text horizontally */
+  margin: 20px 0px 0px 0px; /* Add vertical spacing */
+  /* color: var(--light-black); */
 }
 .recent-posts {
   margin-top: -40px;
@@ -165,7 +175,7 @@ nav {
 }
 .recent-post-box {
   width: 20%;
-  min-width: 300px;
+  min-width: 430px;
   height: 500px;
   background-color: white;
   margin: 30px 0;
@@ -215,13 +225,13 @@ scale: 1.1;
   transition: 1s;
 
 }
-.days {
+/* .days {
   margin: 10px;
   text-align: end;
   font-size: small;
   font-weight: bold;
   color: rgb(87, 85, 85);
-}
+} */
 .recent-post-box h2 {
   margin: 10px;
   margin-bottom: 20px;
@@ -243,7 +253,7 @@ scale: 1.1;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin: 20px 10px;
+  margin: 30px 20px;
   align-items: center;
 }
 .post-footer p {

@@ -7,122 +7,164 @@
     <title>Document</title>
     <link rel="stylesheet" href="css/home-style.css">
     <script src="https://kit.fontawesome.com/eabac940d1.js" crossorigin="anonymous"></script>
-    </head>
+    <style>
+        .hidden {
+            display: none; /* Hides the element without affecting layout */
+        }
+    </style>
+</head>
 <body>
     <nav>
-        <div class="logo"><a href="/home">myBlog</a></div>
-        <div class="search" >
-            <form action="">
-            <input type="text" onkeyup="sendData(this)" id="search" placeholder="Search articles">
-            <button type="reset" class="reset-btn"  id="reset-btn" onclick="sendData(this)"><i class="fa-solid fa-xmark"></i> </button>
+        <div class="logo"><a href="#">myBlog</a></div>
+        <div class="search">
+            <form action="javascript:void(0);">
+              <input
+                type="text"
+                onkeyup="searchBlogs(this)"
+                id="search"
+                placeholder="Search articles"
+              />
+              <button
+                type="reset"
+                class="reset-btn"
+                id="reset-btn"
+                onclick="resetSearch()">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
             </form>
-            <div class="results" id="searchDiv">
-
-        </div>
-        </div>
+            <div class="results" id="searchDiv"></div>
+          </div>
         <div class="nav-items">
             <ul>
-                <li> <a href="/home"> Home</a></li>
-                
-                <li> <a href="/admin">Dashboard</a></li>
-                
-                    <li> <a href="#"> My profile</a></li>
-                   
-                <li> <a href="/logout"> Logout</a></li>
+                <li> <a href="#"> Home</a></li>   
+                <li> <a href="/api/v1/user/logout"> Logout</a></li>
             </ul>
         </div>
     </nav>
     <main>
-        <div class="pop-posts-container">
-            <h1>Popular Articles <a href="/compose"><button><i class="fa-sharp fa-solid fa-pen"></i>&nbsp; Compose</button></a> </h1>
-            
-            
+        <div class="pop-posts-container" style="display: none;"> <!-- Initially hidden -->
+            <h1 id="special">Search Result</h1>  
             <div class="pop-posts">
-                <!-- <marquee behavior="alternate" direction="" onmouseover="this.stop();" onmouseout="this.start();"> -->
-                
-
-                <div class="post-box">
-                   <img src="#" alt="" onerror="this.onerror=null; this.src='images/default-image.png'">
-                   <div class="middle">
-                    <a href="#>" >Read More</a>
+              <% blogs.forEach((blog) => { %>
+                <div class="post-box" data-title="<%= blog.title.toLowerCase() %>">
+                  <img src="<%=blog.featuredImage %>" alt="" onerror="this.onerror=null; this.src='images/default-image.png'">
+                  <div class="middle">
+                    <a href="#" onclick="submitBlogForm('<%= blog.slug %>', '<%= blog.category %>')">Read More</a>
                   </div>
-                   <h2>Hello World</h2>
-                   <p>Hello World blog content</p>
+                  <h2><%= blog.title %></h2>
+                  <p><%= blog.description %></p>
                 </div>
-                
-                 
-            <!-- </marquee> -->
+              <% }); %>
             </div>
-        </div>
+          </div>
 
+        <!-- Recent Posts -->
         <div class="recent-posts-container">
             <h1>Recent Articles</h1>
             <div class="recent-posts">
-                 <% for (let i = 0; i < 15; i++) { %>
+                <% blogs.forEach((blog, index) => { %> <!-- Loop through the array -->
                     <div class="recent-post-box">
                     <a href="#" class="link-card">
                     <div class="img-container">
                         <div>
-                        <img src="#" alt="" onerror="this.onerror=null; this.src='images/default-image.png'">
+                        <img src="<%=blog.featuredImage %>" alt="" onerror="this.onerror=null; this.src='images/donald_trump.jpg'">
                     </div>
                     </div>
                     
-                    <p class="days">23</p>
-                    <h2 title="Hello World"><%= "Hello World" %></h2>
-                    <p class="post-desc">
-                        Hello World blog content
-                    </p>
+                    <!-- <p class="days">.</p> -->
+                    <h2 ><%= blog.title %></h2>
+                    <p class="post-desc"><%= blog.description %></p>
+
                     <div class="post-footer">
-                        <p>Jatin K</p>
-                       <button >ReadMore</button>
+                        <p><%= blog.category %></p>
+                        <!-- Button to trigger the form submission -->
+                        <button onclick="submitBlogForm('<%= blog.slug %>', '<%= blog.category %>')">Go to Blog</button>
                     </div>
                 </a>
                 </div>
-                <% } %>
+                <% }) %>
             </div>
             
         </div>
     </main>
     <script>
-function sendData(e){
-    const searchResults = document.getElementById("searchDiv");
-        if(e.value.length!=0){
-            document.getElementById("reset-btn").style.display="block"
-        }else{
-            document.getElementById("reset-btn").style.display="none"
-        }
-        
-        let match = e.value.match(/^[a-z A-Z]*/)
-        let match2 = e.value.match(/\s*/)
-        if(match2[0] === e.value){
-            searchResults.innerHTML ='';
-            return
-        }
-        if(match[0] === e.value){
-        fetch('search',{
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({payload: e.value})
-        }).then(res=> res.json()).then(data => {
-            let payload =data.payload;
-            searchResults.innerHTML = '';
-            if(payload.length < 1){
-                searchResults.innerHTML = '<p>Sorry nothing found.</p>';
-                return
+            function searchBlogs(input) {
+                const query = input.value.toLowerCase().trim();
+                const blogs = document.querySelectorAll(".post-box");
+                const searchResultsContainer = document.querySelector(".pop-posts-container");
+                const searchResultsHeader = document.getElementById("special");
+                const recentPostsContainer = document.querySelector(".recent-posts-container");
+
+                // Check if the input field is empty
+                if (query === "") {
+                    searchResultsContainer.style.display = "none"; // Hide the container
+                    recentPostsContainer.style.display = "block"; // Show recent posts
+                    return; // Exit the function
+                } else {
+                    searchResultsContainer.style.display = "block"; // Show the container
+                    recentPostsContainer.style.display = "none"; // Hide recent posts
+                    searchResultsHeader.innerText = "Search Result"; // Reset header text
+                }
+
+                let matches = 0; // Track the number of matches
+                blogs.forEach((blog) => {
+                    const title = blog.getAttribute("data-title");
+                    if (title.includes(query)) {
+                    blog.classList.remove("hidden"); // Show matching blogs
+                    matches++;
+                    } else {
+                    blog.classList.add("hidden"); // Hide non-matching blogs
+                    }
+                });
+
+                if (matches === 0) {
+                    searchResultsHeader.innerText = "Sorry, nothing found"; // Update header text
+                } else {
+                    searchResultsHeader.innerText = "Search Result"; // Reset header text
+                }
             }
-            payload.forEach((PosT,index)=>{
-                if(index > 0) searchResults.innerHTML +='';
-                searchResults.innerHTML += `<p><a href="/posts/${PosT._id}" onmouseover="suggest(this)" id="data">${PosT.title}</a></p>`
-            })
-        })
-        return
-        }
-        searchResults.innerHTML = '';
-        }
-        function suggest(e){
-           document.getElementById("search").value=e.innerHTML
-        }
-    
-</script>
+
+
+
+            function resetSearch() {
+                const searchInput = document.getElementById("search");
+                const blogs = document.querySelectorAll(".post-box");
+
+                // Reset input value and show all blogs
+                searchInput.value = "";
+                blogs.forEach((blog) => (blog.style.display = "block"));
+
+                // Hide reset button
+                document.getElementById("reset-btn").style.display = "none";
+
+                // Clear the results div
+                document.getElementById("searchDiv").innerHTML = "";
+            }
+
+            // JavaScript function to create and submit the form dynamically
+            function submitBlogForm(slug, category) {
+                // Create a form element
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = `/${slug}`;  // Use the slug to construct the URL
+
+                // Create a hidden input for the category
+                var categoryInput = document.createElement("input");
+                categoryInput.type = "hidden";
+                categoryInput.name = "category";
+                categoryInput.value = category;
+                
+                // Append the hidden input to the form
+                form.appendChild(categoryInput);
+
+                // Append the form to the body (it won't be visible to the user)
+                document.body.appendChild(form);
+
+                // Submit the form
+                form.submit();
+            }
+
+                
+    </script>
 </body>
 </html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/home-style.css">
+    <scrip src="https://kit.fontawesome.com/eabac940d1.js" crossorigin="anonymous"></scrip>
+    <style>
+        .hidden {
+            display: none; /* Hides the element without affecting layout */
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="#">myBlog</a></div>
+        <div class="search">
+            <form action="javascript:void(0);">
+              <input
+                type="text"
+                onkeyup="searchBlogs(this)"
+                id="search"
+                placeholder="Search articles"
+              />
+              <button
+                type="reset"
+                class="reset-btn"
+                id="reset-btn"
+                onclick="resetSearch()">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+            </form>
+            <div class="results" id="searchDiv"></div>
+          </div>
+
+            <div class="nav-items">
+                <ul>
+                    <li> <a href="#"> Home</a></li>   
+                    <li> <a href="/logout"> Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+    <main>
+        <div class="pop-posts-container" style="display: none;"> <!-- Initially hidden -->
+            <h1 id="special">Search Result</h1>  
+            <div class="pop-posts">
+              <% blogs.forEach((blog) => { %>
+                <div class="post-box" data-title="<%= blog.title.toLowerCase() %>">
+                  <img src="<%=blog.featuredImage %>" alt="" onerror="this.onerror=null; this.src='images/default-image.png'">
+                  <div class="middle">
+                    <a href="/posts">Read More</a>
+                  </div>
+                  <h2><%= blog.title %></h2>
+                  <p><%= blog.description %></p>
+                </div>
+              <% }); %>
+            </div>
+          </div>
+
+          <!-- <h1>Hello</h1> -->
+
+        <!-- <div class="blog-container" id="blogContainer">
+            <% blogs.forEach((blog) => { %>
+              <div class="blog" data-title="<%= blog.title.toLowerCase() %>">
+                <h3><a href="/posts/<%= blog._id %>"><%= blog.title %></a></h3>
+                <p><%= blog.description.substring(0, 100) %>...</p>
+              </div>
+            <% }); %>
+          </div> -->
+
+        <!-- Recent Posts -->
+        <!-- <div class="recent-posts-container">
+            <h1>Recent Articles</h1>
+            <div class="recent-posts">
+                <% blogs.forEach((blog, index) => { %> 
+                    <div class="recent-post-box">
+                    <a href="#" class="link-card">
+                    <div class="img-container">
+                        <div>
+                        <img src="<%=blog.featuredImage %>" alt="" onerror="this.onerror=null; this.src='images/donald_trump.jpg'">
+                    </div>
+                    </div>
+                    
+                    <h2 ><%= blog.title %></h2>
+                    <p class="post-desc"><%= blog.description %></p>
+
+                    <div class="post-footer">
+                        <p><%= blog.category %></p>
+                       <button >ReadMore</button>
+                    </div>
+                </a>
+                </div>
+                <% }) %>
+            </div>
+            
+        </div> -->
+    </main>
+    <script>
+        function searchBlogs(input) {
+            const query = input.value.toLowerCase().trim();
+            const blogs = document.querySelectorAll(".post-box");
+            const searchResultsContainer = document.querySelector(".pop-posts-container");
+            const searchResultsHeader = document.getElementById("special");
+
+            // Check if the input field is empty
+            if (query === "") {
+                searchResultsContainer.style.display = "none"; // Hide the container
+                return; // Exit the function
+            } else {
+                searchResultsContainer.style.display = "block"; // Show the container
+                searchResultsHeader.innerText = "Search Result"; // Reset header text
+            }
+
+            let matches = 0; // Track the number of matches
+            blogs.forEach((blog) => {
+                const title = blog.getAttribute("data-title");
+                if (title.includes(query)) {
+                blog.classList.remove("hidden"); // Show matching blogs
+                matches++;
+                } else {
+                blog.classList.add("hidden"); // Hide non-matching blogs
+                }
+            });
+            if (matches === 0) {
+                searchResultsHeader.innerText = "Sorry, nothing found"; // Update header text
+            } else {
+                searchResultsHeader.innerText = "Search Result"; // Reset header text
+            }
+        }
+
+
+  function resetSearch() {
+    const searchInput = document.getElementById("search");
+    const blogs = document.querySelectorAll(".post-box");
+
+    // Reset input value and show all blogs
+    searchInput.value = "";
+    blogs.forEach((blog) => (blog.style.display = "block"));
+
+    // Hide reset button
+    document.getElementById("reset-btn").style.display = "none";
+
+    // Clear the results div
+    document.getElementById("searchDiv").innerHTML = "";
+  }
+
+    </script>
+</body>
+</html>

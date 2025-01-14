@@ -69,14 +69,85 @@ app.get("/login", (req, res) => {
     res.render("login.ejs");
   });
 
-app.get("/home", (req,res) =>{
-    res.render("home.ejs");
+app.get("/home", async(req,res) =>{
+    try {
+        const blogs=await Blog.find().sort({ date: -1 }); // Sort by date in descending order;
+        // console.log(blogs.title);
+        res.render("home.ejs", {blogs});
+    } catch (error) {
+        console.error("Error fetching blogs:", err);
+        res.status(500).send("Internal Server Error"); 
+    }
+   
+});
+
+// app.get("/example", async(req,res) =>{
+//     try {
+//         const blogs=await Blog.find().sort({ date: -1 }); // Sort by date in descending order;
+//         res.render("ex.ejs", {blogs});
+//     } catch (error) {
+//         console.error("Error fetching blogs:", err);
+//         res.status(500).send("Internal Server Error"); 
+//     }
+   
+// });
+
+app.get("/post-view", async(req,res) =>{
+    try {
+        
+        res.render("blogView.ejs");
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error"); 
+
+    }
+    
 })
 
 app.get("/admin-dashboard", async(req,res) =>{
-    const categories=await Category.find();
-    const blogs=await Blog.find();
-    res.render("adminDashboard.ejs", { categories,blogs });
+    try {
+        const categories=await Category.find();
+        const blogs=await Blog.find();
+        res.render("adminDashboard.ejs", { categories,blogs });
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error"); 
+
+    }
+    
+})
+
+app.post('/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params; // Get the slug from the URL
+        const { category } = req.body; // Get the category from the POST data
+
+         // Fetch the current blog by slug
+         const blog = await Blog.findOne({ slug });
+
+         // Fetch related blogs by category (excluding the current blog)
+        const relatedBlogs = await Blog.find({
+            category:category,
+            slug: { $ne: slug }, // Exclude the current blog
+        });
+
+
+        // console.log(blog.title);
+        // console.log(relatedBlogs.title);
+        // relatedBlogs.forEach(relatedBlog => {
+        //     console.log(relatedBlog.title); 
+        // });
+        
+
+        // Render the blogView.ejs page
+        res.render('blogView.ejs', { blog,relatedBlogs });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error"); 
+    }
+
 })
   
 
@@ -99,4 +170,7 @@ app.listen(PORT, ()=>{
 //     })
 // })
 
- 
+// blog,          
+// Current blog
+// relatedBlogs,  
+// Related blogs

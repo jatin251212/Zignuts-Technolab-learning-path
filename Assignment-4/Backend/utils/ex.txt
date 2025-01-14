@@ -1,0 +1,35 @@
+ Old searchBlog code for showing both search result and All blogs together
+ 
+ function searchBlogs(input) {
+                const query = input.value.toLowerCase().trim();
+                const blogs = document.querySelectorAll(".post-box");
+                const searchResultsContainer = document.querySelector(".pop-posts-container");
+                const searchResultsHeader = document.getElementById("special");
+
+                // Check if the input field is empty
+                if (query === "") {
+                    searchResultsContainer.style.display = "none"; // Hide the container
+                    return; // Exit the function
+                } else {
+                    searchResultsContainer.style.display = "block"; // Show the container
+                    searchResultsHeader.innerText = "Search Result"; // Reset header text
+                }
+
+                let matches = 0; // Track the number of matches
+                blogs.forEach((blog) => {
+                    const title = blog.getAttribute("data-title");
+                    if (title.includes(query)) {
+                    blog.classList.remove("hidden"); // Show matching blogs
+                    matches++;
+                    } else {
+                    blog.classList.add("hidden"); // Hide non-matching blogs
+                    }
+                });
+                if (matches === 0) {
+                    searchResultsHeader.innerText = "Sorry, nothing found"; // Update header text
+                } else {
+                    searchResultsHeader.innerText = "Search Result"; // Reset header text
+                }
+            }
+
+

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>posts</title>
+    <link rel="stylesheet" href="/css/home-style.css" />
+    <link rel="stylesheet" href="/css/post-style.css" />
+    <script src="https://kit.fontawesome.com/eabac940d1.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <nav>
+      <div class="logo"><a href="/home">myBlog</a></div>
+      <div class="nav-items">
+        <ul>
+          <li><a href="/home"> Home</a></li>
+                <!-- <li> Dashboard</li> -->
+                <!-- <li> <a href=""> My profile</a></li> -->
+          <li><a href="/api/v1/user/logout"> Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+    <main>
+      
+      <div class="main-section">
+        <% var height="style=height:120" %>
+        <div class="image-section" <%= height %> >
+          <a href="#"> <img src="<%=blog.featuredImage %>" alt="" /></a>
+        </div>
+        <div class="heading-section">
+          <h1><%=blog.title %></h1>
+        </div>
+        
+        <div class="content-section"><%=blog.description %></div>
+      </div>
+      
+
+     <!-- <span id="likedcheck" style="display: none;">23</span> -->
+
+
+      
+
+      <div class="related-posts-section">
+        <h2>Related Blogs</h2>
+        <% relatedBlogs.forEach((blog) => { %> <!-- Loop through the array -->
+            <a href="#" onclick="submitBlogForm('<%= blog.slug %>', '<%= blog.category %>')" class="related-card">
+              <img src="<%=blog.featuredImage %>" onerror="this.onerror=null; this.src='/images/donald_trump.jpg'" alt="" />
+              <div>
+                <h1>
+                  <%= blog.title.length > 70 ? blog.title.substring(0, 70) + "..." : blog.title %>
+                </h1>
+                <!-- <p><%=blog.category %></p> -->
+              </div>
+            </a>
+          <% } )%>
+      </div>
+
+    </main>
+    <form action="" method="post" id="lcform" style="display: none;">
+      <input type="text" name="likecount" id="lc" onchange="this.form.submit()">
+      <input type="submit" id="submit">
+    </form>
+
+    <script>
+
+function submitBlogForm(slug, category) {
+                // Create a form element
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = `/${slug}`;  // Use the slug to construct the URL
+
+                // Create a hidden input for the category
+                var categoryInput = document.createElement("input");
+                categoryInput.type = "hidden";
+                categoryInput.name = "category";
+                categoryInput.value = category;
+                
+                // Append the hidden input to the form
+                form.appendChild(categoryInput);
+
+                // Append the form to the body (it won't be visible to the user)
+                document.body.appendChild(form);
+
+                // Submit the form
+                form.submit();
+            }
+      
+      // var fcount
+      // var likedstatus=parseInt(document.getElementById("likedcheck").innerHTML)
+      // function like(x) {
+      //   x.classList.toggle("red");
+      //   var count=parseInt(document.getElementById("likecount").innerHTML)
+      //   if(likedstatus===0){
+      //   document.getElementById("likecount").innerHTML=count+1
+      //   fcount=parseInt(document.getElementById("likecount").innerHTML)
+      //   x.classList.add("white")
+      //   likedstatus=1
+      //   }
+      //   else{
+      //     document.getElementById("likecount").innerHTML=count-1
+      //     likedstatus=0
+      //   }
+      //   }
+      //  function lcupdate(){
+      //   document.getElementById("lc").value=fcount
+      //   document.getElementById("submit").click()
+
+      //  }
+    </script>
+  </body>
+</html>
